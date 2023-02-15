@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Provider } from 'react-redux';
 
-function App() {
+import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
+
+import { store } from './store';
+
+import Routers from './services/routers';
+
+const App = () => {
+  const [colorScheme, setColorScheme] = useLocalStorage({
+    key: 'mantine-color-scheme',
+    defaultValue: 'dark',
+    getInitialValueInEffect: true
+  });
+
+  const toggleColorScheme = (value) =>
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ColorSchemeProvider
+      colorScheme={colorScheme}
+      toggleColorScheme={toggleColorScheme}
+    >
+      <MantineProvider
+        theme={{ colorScheme }}
+        withGlobalStyles
+        withNormalizeCSS
+      >
+        <Provider store={store}>
+          <Routers />
+        </Provider>
+      </MantineProvider>
+    </ColorSchemeProvider>
   );
-}
+};
 
 export default App;
