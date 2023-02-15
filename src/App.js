@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
+import { NotificationsProvider } from '@mantine/notifications';
 
 import { store } from './store';
 
@@ -28,9 +29,11 @@ const App = () => {
         withGlobalStyles
         withNormalizeCSS
       >
-        <Provider store={store}>
-          <Routers />
-        </Provider>
+        <NotificationsProvider>
+          <Provider store={store}>
+            <Routers />
+          </Provider>
+        </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );

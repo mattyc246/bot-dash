@@ -4,14 +4,41 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import FullPageLoader from '../components/shared/FullPageLoader';
 import Home from '../components/pages/Home';
+import Dashboard from '../components/pages/Dashboard';
+import SignUp from '../components/pages/SignUp';
 
 import { setIsLoaded, setSession } from '../slices/authSlice';
 import { supabase } from './supabase';
 
+import PublicRoute from '../components/routes/PublicRoute';
+import PrivateRoute from '../components/routes/PrivateRoute';
+
 const router = createBrowserRouter([
+  process.env.NODE_ENV === 'development'
+    ? {
+        path: '/sign_up',
+        element: (
+          <PublicRoute>
+            <SignUp />
+          </PublicRoute>
+        )
+      }
+    : null,
   {
     path: '/',
-    element: <Home />
+    element: (
+      <PublicRoute>
+        <Home />
+      </PublicRoute>
+    )
+  },
+  {
+    path: '/dashboard',
+    element: (
+      <PrivateRoute>
+        <Dashboard />
+      </PrivateRoute>
+    )
   }
 ]);
 
@@ -22,6 +49,8 @@ const Routers = () => {
   useEffect(() => {
     const fetchSession = async () => {
       const { data } = await supabase.auth.getSession();
+
+      console.log(data);
 
       if (data?.session) {
         dispatch(setSession(data.session));
