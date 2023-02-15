@@ -3,7 +3,6 @@ import isEmail from 'validator/lib/isEmail';
 
 import { Button, Card, Stack, TextInput, Title } from '@mantine/core';
 import { supabase } from '../../services/supabase';
-import { useNavigate } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 
 const SignUpForm = () => {
@@ -11,8 +10,6 @@ const SignUpForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  const navigate = useNavigate();
 
   const handleSignUp = async () => {
     setIsLoading(true);

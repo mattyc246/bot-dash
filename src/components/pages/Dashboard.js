@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Button } from '@mantine/core';
 
+import Layout from '../shared/Layout';
+
 import { supabase } from '../../services/supabase';
 
 const Dashboard = () => {
@@ -9,10 +11,7 @@ const Dashboard = () => {
     await supabase.auth.signOut();
   };
   return (
-    <>
-      <Button onClick={() => handleSignOut()}>Sign out</Button>
-      <h1>Dashboard</h1>
-    </>
+    <Layout></Layout>
   );
 };
 
