@@ -2,9 +2,27 @@ import React, { useState } from 'react';
 
 import { Button, Card, Stack, TextInput, Title } from '@mantine/core';
 
+import { supabase } from '../../services/supabase';
+import { showNotification } from '@mantine/notifications';
+
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (error) {
+      showNotification({
+        message: error.message,
+        color: 'red'
+      });
+      return;
+    }
+  };
 
   return (
     <Card shadow="xl" p="md" sx={{ minWidth: '300px' }}>
@@ -27,7 +45,7 @@ const LoginForm = () => {
           value={password}
           onChange={(e) => setPassword(e?.target?.value)}
         />
-        <Button mt="lg" color="red">
+        <Button onClick={handleLogin} mt="lg" color="red">
           Sign In
         </Button>
       </Stack>

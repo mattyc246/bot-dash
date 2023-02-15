@@ -30,12 +30,6 @@ const SignUpForm = () => {
       setIsLoading(false);
       return;
     }
-
-    showNotification({
-      message: 'Please sign in to continue.',
-      color: 'green'
-    });
-    navigate('/');
   };
 
   const continueDisabled =
