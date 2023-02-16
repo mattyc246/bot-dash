@@ -3,15 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import FullPageLoader from '../components/shared/FullPageLoader';
+import PublicRoute from '../components/routes/PublicRoute';
+import PrivateRoute from '../components/routes/PrivateRoute';
+
 import Home from '../components/pages/Home';
 import Dashboard from '../components/pages/Dashboard';
 import SignUp from '../components/pages/SignUp';
+import TwoTimesEvents from '../components/pages/TwoTimesEvents';
 
 import { setIsLoaded, setSession } from '../slices/authSlice';
 import { supabase } from './supabase';
-
-import PublicRoute from '../components/routes/PublicRoute';
-import PrivateRoute from '../components/routes/PrivateRoute';
 
 const router = createBrowserRouter([
   process.env.NODE_ENV === 'development'
@@ -39,6 +40,14 @@ const router = createBrowserRouter([
         <Dashboard />
       </PrivateRoute>
     )
+  },
+  {
+    path: '/2x-events',
+    element: (
+      <PrivateRoute>
+        <TwoTimesEvents />
+      </PrivateRoute>
+    )
   }
 ]);
 
@@ -49,8 +58,6 @@ const Routers = () => {
   useEffect(() => {
     const fetchSession = async () => {
       const { data } = await supabase.auth.getSession();
-
-      console.log(data);
 
       if (data?.session) {
         dispatch(setSession(data.session));
