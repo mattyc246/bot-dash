@@ -42,6 +42,10 @@ const AddTwoTimesForm = () => {
 
     // Always take the first item since it is not bulk creation
     dispatch(addEvent(data[0]));
+    return showNotification({
+      message: 'New event created!',
+      color: 'green'
+    });
   };
 
   return (

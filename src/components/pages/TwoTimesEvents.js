@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Card, Divider, Grid, Title } from '@mantine/core';
+import { Card, Divider, Grid, Group, Switch, Title, Text } from '@mantine/core';
 
 import Layout from '../shared/Layout';
 import AddTwoTimesForm from '../forms/AddTwoTimesForm';
@@ -10,8 +10,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../../services/supabase';
 import { showNotification } from '@mantine/notifications';
 import TwoTimesList from '../twoTimes/TwoTimesList';
+import moment from 'moment';
 
 const TwoTimesEvents = () => {
+  const [isShowingPast, setIsShowingPast] = useState(false);
   const dispatch = useDispatch();
   const events = useSelector((state) => state.twoTimes?.events);
 
@@ -32,6 +34,10 @@ const TwoTimesEvents = () => {
     fetchEvents();
   }, [dispatch]);
 
+  const filteredEvents = !isShowingPast
+    ? events
+    : events.filter((e) => moment().isBefore(moment(e.end_date)));
+
   return (
     <Layout>
       <Grid justify="center">
@@ -44,9 +50,20 @@ const TwoTimesEvents = () => {
         </Grid.Col>
         <Grid.Col sm={12} md={6}>
           <Card>
-            <Title order={5}>All 2x Events</Title>
+            <Group position="apart">
+              <Title order={5}>All 2x Events</Title>
+              <Switch
+                label={<Text size="xs">Hide Past</Text>}
+                labelPosition="left"
+                onLabel="ON"
+                offLabel="OFF"
+                size="md"
+                checked={isShowingPast}
+                onChange={(e) => setIsShowingPast(e.currentTarget.checked)}
+              />
+            </Group>
             <Divider my="md" />
-            <TwoTimesList events={events} />
+            <TwoTimesList events={filteredEvents} />
           </Card>
         </Grid.Col>
       </Grid>
