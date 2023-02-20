@@ -3,6 +3,10 @@ import React, { useState } from 'react';
 import { Button, NativeSelect, Stack, Text } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { supabase } from '../../services/supabase';
+import { useDispatch } from 'react-redux';
+import { showNotification } from '@mantine/notifications';
+import { addEvent } from '../../slices/twoTimesSlice';
+import { convertDateTime } from '../../services/helpers';
 
 const shardTypes = [
   { value: 'ancient', label: 'Ancient' },
@@ -17,18 +21,27 @@ const AddTwoTimesForm = () => {
   const [endTime, setEndTime] = useState(new Date());
   const [shardType, setShardType] = useState('ancient');
 
+  const dispatch = useDispatch();
+
   const handleSubmit = async () => {
     const { data, error } = await supabase
       .from('two_times_events')
       .insert({
-        start_date: new Date().toUTCString(),
-        end_date: new Date().toUTCString(),
+        start_date: convertDateTime(startDate, startTime),
+        end_date: convertDateTime(endDate, endTime),
         type: shardType
       })
       .select();
 
-    console.log(data);
-    console.log(error);
+    if (error) {
+      return showNotification({
+        message: 'Error creating new event',
+        color: 'red'
+      });
+    }
+
+    // Always take the first item since it is not bulk creation
+    dispatch(addEvent(data[0]));
   };
 
   return (

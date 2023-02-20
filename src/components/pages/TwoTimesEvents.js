@@ -1,32 +1,39 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Card, Center, Divider, Grid, Text, Title } from '@mantine/core';
 
 import Layout from '../shared/Layout';
 import AddTwoTimesForm from '../forms/AddTwoTimesForm';
 
+import { setEvents } from '../../slices/twoTimesSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { supabase } from '../../services/supabase';
+import { showNotification } from '@mantine/notifications';
+
 const TwoTimesEvents = () => {
+  const dispatch = useDispatch();
+  const events = useSelector((state) => state.twoTimes?.events);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { data, error } = await supabase.from('two_times_events').select();
+
+      if (error) {
+        return showNotification({
+          message: 'Unable to fetch 2x events',
+          color: 'red'
+        });
+      }
+
+      dispatch(setEvents(data));
+    };
+
+    fetchEvents();
+  }, [dispatch]);
+
   return (
     <Layout>
       <Grid justify="center">
-        <Grid.Col sm={12} md={6}>
-          <Card>
-            <Title order={5}>Last 2x</Title>
-            <Divider my="md" />
-            <Center h="100px">
-              <Text>No last 2x</Text>
-            </Center>
-          </Card>
-        </Grid.Col>
-        <Grid.Col sm={12} md={6}>
-          <Card>
-            <Title order={5}>Next 2x</Title>
-            <Divider my="md" />
-            <Center h="100px">
-              <Text>No upcoming 2x</Text>
-            </Center>
-          </Card>
-        </Grid.Col>
         <Grid.Col sm={12} md={6}>
           <Card>
             <Title order={5}>Add 2x Event</Title>
@@ -36,10 +43,10 @@ const TwoTimesEvents = () => {
         </Grid.Col>
         <Grid.Col sm={12} md={6}>
           <Card>
-            <Title order={5}>Past 2x</Title>
+            <Title order={5}>All 2x Events</Title>
             <Divider my="md" />
             <Center h="100px">
-              <Text>No past 2x</Text>
+              <Text>Total events {events?.length}</Text>
             </Center>
           </Card>
         </Grid.Col>
