@@ -13,10 +13,13 @@ export const twoTimesSlice = createSlice({
     },
     addEvent: (state, action) => {
       state.events = [...state.events, action.payload];
+    },
+    deleteEvent: (state, action) => {
+      state.events = state.events.filter((e) => e.id !== action.payload);
     }
   }
 });
 
-export const { setEvents, addEvent } = twoTimesSlice.actions;
+export const { setEvents, addEvent, deleteEvent } = twoTimesSlice.actions;
 
 export default twoTimesSlice.reducer;

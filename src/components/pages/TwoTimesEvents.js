@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { Card, Center, Divider, Grid, Text, Title } from '@mantine/core';
+import { Card, Divider, Grid, Title } from '@mantine/core';
 
 import Layout from '../shared/Layout';
 import AddTwoTimesForm from '../forms/AddTwoTimesForm';
@@ -9,6 +9,7 @@ import { setEvents } from '../../slices/twoTimesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../../services/supabase';
 import { showNotification } from '@mantine/notifications';
+import TwoTimesList from '../twoTimes/TwoTimesList';
 
 const TwoTimesEvents = () => {
   const dispatch = useDispatch();
@@ -45,9 +46,7 @@ const TwoTimesEvents = () => {
           <Card>
             <Title order={5}>All 2x Events</Title>
             <Divider my="md" />
-            <Center h="100px">
-              <Text>Total events {events?.length}</Text>
-            </Center>
+            <TwoTimesList events={events} />
           </Card>
         </Grid.Col>
       </Grid>
