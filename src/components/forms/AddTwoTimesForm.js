@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 
-import { Button, NativeSelect, Stack, Text } from '@mantine/core';
-import { DatePicker, TimeInput } from '@mantine/dates';
+import {
+  ActionIcon,
+  Button,
+  Divider,
+  Group,
+  NativeSelect,
+  Stack,
+  Text,
+  TextInput
+} from '@mantine/core';
 import { supabase } from '../../services/supabase';
 import { useDispatch } from 'react-redux';
 import { showNotification } from '@mantine/notifications';
 import { addEvent } from '../../slices/twoTimesSlice';
-import { convertDateTime } from '../../services/helpers';
+import { IconPlus, IconTrash } from '@tabler/icons-react';
 
 const shardTypes = [
   { value: 'ancient', label: 'Ancient' },
@@ -15,23 +23,42 @@ const shardTypes = [
 ];
 
 const AddTwoTimesForm = () => {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [newNote, setNewNote] = useState('');
+  const [additionalNotes, setAdditionalNotes] = useState([]);
+
   const [shardType, setShardType] = useState('ancient');
 
   const dispatch = useDispatch();
+
+  const addNote = (note) => {
+    if (note) {
+      setAdditionalNotes([...additionalNotes, note]);
+      setNewNote('');
+    }
+  };
+
+  const deleteNote = (index) => {
+    if (index !== null) {
+      const newNotes = [...additionalNotes];
+      newNotes.splice(index, 1);
+      setAdditionalNotes(newNotes);
+    }
+  };
 
   const handleSubmit = async () => {
     const { data, error } = await supabase
       .from('two_times_events')
       .insert({
-        start_date: convertDateTime(startDate, startTime),
-        end_date: convertDateTime(endDate, endTime),
-        type: shardType
+        start_date: startDate,
+        end_date: endDate,
+        type: shardType,
+        additional_notes: additionalNotes.length > 0 ? additionalNotes : null
       })
       .select();
+
+    console.log(error);
 
     if (error) {
       return showNotification({
@@ -42,6 +69,10 @@ const AddTwoTimesForm = () => {
 
     // Always take the first item since it is not bulk creation
     dispatch(addEvent(data[0]));
+    setShardType('ancient');
+    setStartDate('');
+    setEndDate('');
+    setAdditionalNotes([]);
     return showNotification({
       message: 'New event created!',
       color: 'green'
@@ -50,33 +81,18 @@ const AddTwoTimesForm = () => {
 
   return (
     <Stack spacing="md">
-      <Text size="xs" color="dimmed">
-        Set all event start times in UTC
-      </Text>
-      <DatePicker
-        placeholder="Start date"
+      <TextInput
+        placeholder="YYYY-MM-DD"
         value={startDate}
-        onChange={setStartDate}
+        onChange={(e) => setStartDate(e.target.value)}
         label="Start date"
         withAsterisk
       />
-      <TimeInput
-        label="Start time"
-        value={startTime}
-        onChange={setStartTime}
-        withAsterisk
-      />
-      <DatePicker
-        placeholder="End date"
+      <TextInput
+        placeholder="YYYY-MM-DD"
         value={endDate}
-        onChange={setEndDate}
+        onChange={(e) => setEndDate(e.target.value)}
         label="End date"
-        withAsterisk
-      />
-      <TimeInput
-        label="End time"
-        value={endTime}
-        onChange={setEndTime}
         withAsterisk
       />
       <NativeSelect
@@ -86,6 +102,35 @@ const AddTwoTimesForm = () => {
         label="Shard type"
         withAsterisk
       />
+      <Group position="apart" align="center">
+        <TextInput
+          placeholder="Additional Note"
+          value={newNote}
+          onChange={(e) => setNewNote(e.target.value)}
+          sx={{ flex: 1 }}
+          withAsterisk
+        />
+        <ActionIcon variant="filled" onClick={() => addNote(newNote)}>
+          <IconPlus size={16} />
+        </ActionIcon>
+      </Group>
+      {additionalNotes.length > 0 && (
+        <>
+          <Divider />
+          {additionalNotes.map((note, index) => {
+            return (
+              <Group key={index} position="apart" align="center">
+                <Text size="sm" sx={{ flex: 1 }}>
+                  {note}
+                </Text>
+                <ActionIcon onClick={() => deleteNote(index)}>
+                  <IconTrash size={16} />
+                </ActionIcon>
+              </Group>
+            );
+          })}
+        </>
+      )}
       <Button onClick={handleSubmit}>Submit</Button>
     </Stack>
   );

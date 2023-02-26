@@ -1,7 +1,15 @@
 import React from 'react';
 import moment from 'moment';
 
-import { Card, Group, Stack, ActionIcon, Text } from '@mantine/core';
+import {
+  Card,
+  Group,
+  Stack,
+  ActionIcon,
+  Text,
+  Divider,
+  List
+} from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import { supabase } from '../../services/supabase';
 import { showNotification } from '@mantine/notifications';
@@ -43,16 +51,28 @@ const TwoTimesEventCard = ({ event }) => {
       <Group position="apart">
         <Stack>
           <Text size="sm">
-            <b>Starts:</b> {moment(event.start_date).format('DD/MM/YY hh:mma')}
+            <b>Starts:</b> {moment(event.start_date).format('Do MMMM YYYY')}
           </Text>
           <Text size="sm">
-            <b>Ends:</b> {moment(event.end_date).format('DD/MM/YY hh:mma')}
+            <b>Ends:</b> {moment(event.end_date).format('Do MMMM YYYY')}
           </Text>
         </Stack>
         <ActionIcon onClick={handleDelete} variant="subtle">
           <IconTrash size={16} />
         </ActionIcon>
       </Group>
+      {event.additional_notes && (
+        <>
+          <Divider my="md" />
+          <List>
+            {event.additional_notes.map((note) => (
+              <List.Item key={note}>
+                <Text size="sm">{note}</Text>
+              </List.Item>
+            ))}
+          </List>
+        </>
+      )}
     </Card>
   );
 };
